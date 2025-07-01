@@ -21,13 +21,19 @@ const navigation = () => {
       path: '/dashboard',
       subject: 'Dashboard',
       title: 'Dashoard',
-      icon: 'tabler:shield'
+      icon: 'tabler:dashboard'
     },
     {
-      path: '/applications',
-      subject: 'Applications',
-      title: 'Applications',
-      icon: 'tabler:shield'
+      path: '/job-approval-applications',
+      subject: 'Job Approval Applications',
+      title: 'Approval Applications',
+      icon: 'tabler:database'
+    },
+    {
+      path: '/applied-applications',
+      subject: 'Applied Applications',
+      title: 'Applied Applications',
+      icon: 'tabler:terminal'
     }
   ]
 }
