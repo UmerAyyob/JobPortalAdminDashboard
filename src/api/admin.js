@@ -28,5 +28,5 @@ let logoutAdmin = async data => {
 export default {
   registerAdmin,
   loginAdmin,
-  logoutAdmin
+  logoutAdmin,
 }
