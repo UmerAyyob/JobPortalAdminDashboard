@@ -31,6 +31,7 @@ import { useSettings } from 'src/@core/hooks/useSettings'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import adminApi from 'src/api/admin.crud' // <-- Add this import
 
 // ** Styled Components
 const RegisterIllustration = styled('img')(({ theme }) => ({
@@ -77,6 +78,15 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
 const Register = () => {
   // ** States
   const [showPassword, setShowPassword] = useState(false)
+  const [form, setForm] = useState({
+    fullname: '',
+    username: '',
+    phone: '',
+    email: '',
+    password: ''
+  })
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   // ** Hooks
   const theme = useTheme()
@@ -86,6 +96,25 @@ const Register = () => {
   // ** Vars
   const { skin } = settings
   const imageSource = skin === 'bordered' ? 'auth-v2-register-illustration-bordered' : 'auth-v2-register-illustration'
+
+  // Handle input change
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  // Handle form submit
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+    try {
+      await adminApi.registerAdmin(form)
+      setSuccess('Registration successful! You can now log in.')
+      setForm({ fullname: '', username: '', phone: '', email: '', password: '' })
+    } catch (err) {
+      setError('Registration failed. Please check your details and try again.')
+    }
+  }
 
   return (
     <Box className='content-right' sx={{ backgroundColor: 'background.paper' }}>
@@ -144,7 +173,6 @@ const Register = () => {
               <path
                 fillRule='evenodd'
                 clipRule='evenodd'
-                fill={theme.palette.primary.main}
                 d='M7.77295 16.3566L23.6563 0H32V6.88383C32 6.88383 31.8262 9.17836 30.6591 10.4057L19.7824 22H13.6938L7.77295 16.3566Z'
               />
             </svg>
@@ -154,16 +182,52 @@ const Register = () => {
               </Typography>
               <Typography sx={{ color: 'text.secondary' }}>Make your app management easy and fun!</Typography>
             </Box>
-            <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-              <TextField autoFocus fullWidth sx={{ mb: 4 }} label='Fullname' placeholder='johndoe Alexander' />
-              <TextField autoFocus fullWidth sx={{ mb: 4 }} label='Username' placeholder='johndoe' />
-              <TextField autoFocus fullWidth sx={{ mb: 4 }} label='Phone Number' placeholder='+1 4847628283' />
-              <TextField fullWidth label='Email' sx={{ mb: 4 }} placeholder='user@email.com' />
+            <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+              <TextField
+                autoFocus
+                fullWidth
+                sx={{ mb: 4 }}
+                label='Fullname'
+                name='fullname'
+                value={form.fullname}
+                onChange={handleChange}
+                placeholder='johndoe Alexander'
+              />
+              <TextField
+                fullWidth
+                sx={{ mb: 4 }}
+                label='Username'
+                name='username'
+                value={form.username}
+                onChange={handleChange}
+                placeholder='johndoe'
+              />
+              <TextField
+                fullWidth
+                sx={{ mb: 4 }}
+                label='Phone Number'
+                name='phone'
+                value={form.phone}
+                onChange={handleChange}
+                placeholder='+1 4847628283'
+              />
+              <TextField
+                fullWidth
+                label='Email'
+                name='email'
+                sx={{ mb: 4 }}
+                value={form.email}
+                onChange={handleChange}
+                placeholder='user@email.com'
+              />
               <FormControl fullWidth>
                 <InputLabel htmlFor='auth-login-v2-password'>Password</InputLabel>
                 <OutlinedInput
                   label='Password'
                   id='auth-login-v2-password'
+                  name='password'
+                  value={form.password}
+                  onChange={handleChange}
                   type={showPassword ? 'text' : 'password'}
                   endAdornment={
                     <InputAdornment position='end'>
@@ -178,7 +242,8 @@ const Register = () => {
                   }
                 />
               </FormControl>
-
+              {error && <Typography sx={{ color: 'error.main', mt: 2, mb: 2 }}>{error}</Typography>}
+              {success && <Typography sx={{ color: 'success.main', mt: 2, mb: 2 }}>{success}</Typography>}
               <FormControlLabel
                 control={<Checkbox />}
                 sx={{ mb: 4, mt: 1.5, '& .MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
